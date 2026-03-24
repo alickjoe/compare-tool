@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: text-compare-tool
     ports:
-      - "3000:80"
+      - "3100:80"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:80"]
