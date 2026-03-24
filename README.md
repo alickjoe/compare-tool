@@ -104,6 +104,62 @@ server {
 }
 ```
 
+### 方式四：子路径部署（如 /compare）
+
+如果需要在现有服务器的子路径下运行（如 `https://your-domain.com/compare/`）：
+
+1. **修改 `vite.config.ts` 中的 `base` 配置**（已配置为 `/compare/`）
+
+2. **重新构建**：
+```bash
+npm run build
+# 或
+docker-compose build
+```
+
+3. **Nginx 反向代理配置**（HTTPS + 子路径）：
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name your-domain.com;
+    
+    # SSL 证书配置
+    ssl_certificate /etc/nginx/ssl/your-domain.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/your-domain.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    
+    # 文本对比工具 - 子路径配置
+    location /compare/ {
+        proxy_pass http://127.0.0.1:3000/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+    
+    # 静态资源缓存优化
+    location ~* ^/compare/assets/.*\.(js|css|png|svg|woff2?)$ {
+        proxy_pass http://127.0.0.1:3000;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+    
+    # 你现有的其他配置...
+}
+```
+
+4. **启动 Docker 容器**：
+```bash
+docker run -d -p 127.0.0.1:3000:80 --name text-compare text-compare-tool
+```
+
+访问地址：`https://your-domain.com/compare/`
+
+> 详细配置示例请参考 `nginx-proxy-example.conf` 文件
+
 ## 技术栈
 
 - React 18
