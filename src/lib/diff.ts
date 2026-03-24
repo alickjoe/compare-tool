@@ -30,9 +30,6 @@ export interface InlineDiffPart {
  * 计算两个文本之间的差异
  */
 export function computeDiff(oldText: string, newText: string): DiffResult {
-  const oldLines = oldText.split('\n')
-  const newLines = newText.split('\n')
-  
   const diffResult = Diff.diffLines(oldText, newText)
   
   const lines: DiffLine[] = []
@@ -40,7 +37,6 @@ export function computeDiff(oldText: string, newText: string): DiffResult {
   let newLineNum = 0
   let addedLines = 0
   let removedLines = 0
-  let modifiedLines = 0
   let unchangedLines = 0
 
   diffResult.forEach((part) => {
@@ -220,8 +216,6 @@ export interface SideBySideLine {
 }
 
 export function computeSideBySideDiff(oldText: string, newText: string): SideBySideLine[] {
-  const oldLines = oldText.split('\n')
-  const newLines = newText.split('\n')
   const result: SideBySideLine[] = []
   
   const diffResult = Diff.diffLines(oldText, newText)

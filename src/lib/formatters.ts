@@ -276,9 +276,6 @@ function checkShell(text: string): SyntaxCheckResult {
   // Basic shell syntax checks
   let openQuotes = 0
   let openDoubleQuotes = 0
-  let openBraces = 0
-  let openBrackets = 0
-  let openParentheses = 0
   
   lines.forEach((line, index) => {
     const lineNum = index + 1
